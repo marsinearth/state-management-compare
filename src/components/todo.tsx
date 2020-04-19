@@ -15,9 +15,18 @@ export interface TodoProps {
   value: string;
 }
 
+interface TodoHandleFuncs {
+  toggleDone: (todo: TodoProps) => void;
+  deleteTodo: (todo: TodoProps) => void;
+}
+
 export default function Todo({
-  item: {value, done},
-}: ListRenderItemInfo<TodoProps>) {
+  item,
+  toggleDone,
+  deleteTodo,
+}: ListRenderItemInfo<TodoProps> & TodoHandleFuncs) {
+  const {value, done} = item;
+
   return (
     <View style={styles.todoContainer}>
       <View style={styles.todoSection}>
@@ -27,19 +36,16 @@ export default function Todo({
         </Text>
       </View>
       <View style={styles.btnContainer}>
-        <TouchableHighlight style={{flex: 1}}>
+        <TouchableHighlight onPress={() => toggleDone(item)}>
           <View
-            style={[
-              styles.button,
-              {backgroundColor: done ? 'yellow' : 'teal'},
-            ]}>
+            style={[styles.button, {backgroundColor: done ? 'khaki' : 'teal'}]}>
             <Text
               style={[styles.btnText, {color: done ? 'gray' : 'whitesmoke'}]}>
               {done ? 'Undo' : 'Done'}
             </Text>
           </View>
         </TouchableHighlight>
-        <TouchableHighlight>
+        <TouchableHighlight onPress={() => deleteTodo(item)}>
           <View style={[styles.button, {backgroundColor: 'lightcoral'}]}>
             <Text style={styles.btnText}>Delete</Text>
           </View>
