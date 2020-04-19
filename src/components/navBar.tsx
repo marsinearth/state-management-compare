@@ -1,28 +1,23 @@
 import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {Dispatch, SetStateAction, useContext, useState} from 'react';
+import React, {useState} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {TodoContext} from '../contexts/todoContext';
-
-interface ModalRendererProps {
-  showMenu: boolean;
-  toggleMenu: Dispatch<SetStateAction<boolean>>;
-}
+import {addTodo} from '../redux/todoSlice';
+import {useDispatch} from 'react-redux';
 
 export default function Navbar() {
-  const [todos, addTodo] = useContext(TodoContext);
+  const dispatch = useDispatch();
   const [addTodoText, setAddTodo] = useState('');
 
   const dispatchTodo = () => {
     if (addTodoText.trim()) {
-      addTodo([
-        ...todos,
-        {
+      dispatch(
+        addTodo({
           id: Date.now(),
           value: addTodoText,
           done: false,
-        },
-      ]);
+        }),
+      );
       setAddTodo('');
     }
   };

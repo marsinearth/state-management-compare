@@ -5,9 +5,11 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import React, {useCallback} from 'react';
+import {deleteTodo, setTodoDone} from '../redux/todoSlice';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import React from 'react';
+import {useDispatch} from 'react-redux';
 
 export interface TodoProps {
   id: number;
@@ -15,17 +17,17 @@ export interface TodoProps {
   value: string;
 }
 
-interface TodoHandleFuncs {
-  toggleDone: (todo: TodoProps) => void;
-  deleteTodo: (todo: TodoProps) => void;
-}
-
-export default function Todo({
-  item,
-  toggleDone,
-  deleteTodo,
-}: ListRenderItemInfo<TodoProps> & TodoHandleFuncs) {
+export default function Todo({item}: ListRenderItemInfo<TodoProps>) {
   const {value, done} = item;
+  const dispatch = useDispatch();
+
+  const toggleDone = useCallback(() => {
+    dispatch(setTodoDone(item));
+  }, [dispatch, item]);
+
+  const delTodo = useCallback(() => {
+    dispatch(deleteTodo(item.id));
+  }, [dispatch, item]);
 
   return (
     <View style={styles.todoContainer}>
@@ -36,7 +38,7 @@ export default function Todo({
         </Text>
       </View>
       <View style={styles.btnContainer}>
-        <TouchableHighlight onPress={() => toggleDone(item)}>
+        <TouchableHighlight onPress={toggleDone}>
           <View
             style={[styles.button, {backgroundColor: done ? 'khaki' : 'teal'}]}>
             <Text
@@ -45,7 +47,7 @@ export default function Todo({
             </Text>
           </View>
         </TouchableHighlight>
-        <TouchableHighlight onPress={() => deleteTodo(item)}>
+        <TouchableHighlight onPress={delTodo}>
           <View style={[styles.button, {backgroundColor: 'lightcoral'}]}>
             <Text style={styles.btnText}>Delete</Text>
           </View>

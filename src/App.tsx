@@ -13,15 +13,16 @@ import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
 
 import DismissKeyboardHOC from './utils/dismissKeyboardComp';
 import NavBar from './components/navBar';
+import {Provider} from 'react-redux';
 import React from 'react';
 import TodoList from './components/todoList';
-import {TodoProvider} from './contexts/todoContext';
+import store from './redux/store';
 
 declare const global: {HermesInternal: null | {}};
 
 const App = () => {
   return (
-    <TodoProvider>
+    <Provider store={store}>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={{flex: 1}}>
         <DismissKeyboardHOC>
@@ -37,7 +38,7 @@ const App = () => {
           <TodoList />
         </View>
       </SafeAreaView>
-    </TodoProvider>
+    </Provider>
   );
 };
 

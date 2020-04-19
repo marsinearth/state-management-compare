@@ -1,27 +1,13 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import React, {useContext} from 'react';
 import Todo, {TodoProps} from './todo';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {TodoContext} from '../contexts/todoContext';
+import React from 'react';
+import {todosSelector} from '../redux/todoSlice';
+import {useSelector} from 'react-redux';
 
 export default function TodoList() {
-  const [todos, setTodos] = useContext(TodoContext);
-
-  const toggleDone = (todo: TodoProps) => {
-    const ts = todos.map((t) => {
-      if (t.id === todo.id) {
-        t.done = !t.done;
-      }
-      return t;
-    });
-    setTodos(ts);
-  };
-
-  const deleteTodo = (todo: TodoProps) => {
-    const ts = todos.filter(({id}) => id !== todo.id);
-    setTodos(ts);
-  };
+  const todos = useSelector(todosSelector.selectAll);
 
   return (
     <>
@@ -31,9 +17,7 @@ export default function TodoList() {
 
       <FlatList<TodoProps>
         data={todos}
-        renderItem={(props) => (
-          <Todo {...props} toggleDone={toggleDone} deleteTodo={deleteTodo} />
-        )}
+        renderItem={(props) => <Todo {...props} />}
         keyExtractor={({id}) => `${id}`}
       />
     </>
