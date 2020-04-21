@@ -1,31 +1,26 @@
 import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {Dispatch, SetStateAction, useContext, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
+import {TodoContext, TodoMap} from '../contexts/todoContext';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {TodoContext} from '../contexts/todoContext';
-
-interface ModalRendererProps {
-  showMenu: boolean;
-  toggleMenu: Dispatch<SetStateAction<boolean>>;
-}
 
 export default function Navbar() {
-  const [todos, addTodo] = useContext(TodoContext);
+  const [, setTodo] = useContext(TodoContext);
   const [addTodoText, setAddTodo] = useState('');
 
-  const dispatchTodo = () => {
+  const addTodo = useCallback(() => {
     if (addTodoText.trim()) {
-      addTodo([
-        ...todos,
-        {
+      setTodo((prevTodos: TodoMap) => ({
+        ...prevTodos,
+        [Date.now()]: {
           id: Date.now(),
           value: addTodoText,
           done: false,
         },
-      ]);
+      }));
       setAddTodo('');
     }
-  };
+  }, [setTodo, addTodoText]);
 
   return (
     <View style={styles.navContainer}>
@@ -42,7 +37,7 @@ export default function Navbar() {
         <Button
           color={Colors.primary}
           title="Add Todo"
-          onPress={() => dispatchTodo()}
+          onPress={() => addTodo()}
         />
       </View>
     </View>

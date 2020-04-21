@@ -1,36 +1,45 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import React, {useContext} from 'react';
+import React, {useCallback, useContext, useMemo} from 'react';
 import Todo, {TodoProps} from './todo';
+import {TodoContext, TodoMap} from '../contexts/todoContext';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {TodoContext} from '../contexts/todoContext';
 
 export default function TodoList() {
   const [todos, setTodos] = useContext(TodoContext);
 
-  const toggleDone = (todo: TodoProps) => {
-    const ts = todos.map((t) => {
-      if (t.id === todo.id) {
-        t.done = !t.done;
-      }
-      return t;
-    });
-    setTodos(ts);
-  };
+  const listData = useMemo(() => Object.values(todos), [todos]);
 
-  const deleteTodo = (todo: TodoProps) => {
-    const ts = todos.filter(({id}) => id !== todo.id);
-    setTodos(ts);
-  };
+  const toggleDone = useCallback(
+    (id: number) => {
+      setTodos((prevTodos: TodoMap) => {
+        prevTodos[id].done = !prevTodos[id].done;
+        return {...prevTodos};
+      });
+    },
+    [setTodos],
+  );
+
+  const deleteTodo = useCallback(
+    (id: number) => {
+      setTodos((prevTodos: TodoMap) => {
+        delete prevTodos[id];
+        return {
+          ...prevTodos,
+        };
+      });
+    },
+    [setTodos],
+  );
 
   return (
     <>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{todos.length} Todos</Text>
+        <Text style={styles.title}>{listData.length} Todos</Text>
       </View>
 
       <FlatList<TodoProps>
-        data={todos}
+        data={listData}
         renderItem={(props) => (
           <Todo {...props} toggleDone={toggleDone} deleteTodo={deleteTodo} />
         )}

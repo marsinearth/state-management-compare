@@ -8,23 +8,25 @@ import React, {
 
 import {TodoProps} from '../components/todo';
 
-type TodoContextState = [TodoProps[], Dispatch<SetStateAction<TodoProps[]>>];
+export type TodoMap = {[id: number]: TodoProps};
 
-export const TodoContext = createContext<TodoContextState>([[], () => {}]);
+type TodoContextState = [TodoMap, Dispatch<SetStateAction<TodoMap>>];
+
+export const TodoContext = createContext<TodoContextState>([{}, () => {}]);
 
 export const TodoProvider: FC<unknown> = ({children}) => {
-  const [todos, setTodos] = useState([
-    {
+  const [todos, setTodos] = useState({
+    [Date.now()]: {
       id: Date.now(),
       value: 'Buy milk',
       done: false,
     },
-    {
+    [Date.now() + 1]: {
       id: Date.now() + 1,
       value: 'Play with doge',
       done: false,
     },
-  ]);
+  });
 
   return (
     <TodoContext.Provider value={[todos, setTodos]}>
