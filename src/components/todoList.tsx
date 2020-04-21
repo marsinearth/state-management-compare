@@ -1,27 +1,17 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import React, {useContext} from 'react';
-import Todo, {TodoProps} from './todo';
+import {ITodo, ITodoStore} from 'src/models/todo';
+import React, {FC} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {TodoContext} from '../contexts/todoContext';
+import Todo from './todo';
+import {observer} from 'mobx-react';
 
-export default function TodoList() {
-  const [todos, setTodos] = useContext(TodoContext);
+interface TodoListProps {
+  store: ITodoStore;
+}
 
-  const toggleDone = (todo: TodoProps) => {
-    const ts = todos.map((t) => {
-      if (t.id === todo.id) {
-        t.done = !t.done;
-      }
-      return t;
-    });
-    setTodos(ts);
-  };
-
-  const deleteTodo = (todo: TodoProps) => {
-    const ts = todos.filter(({id}) => id !== todo.id);
-    setTodos(ts);
-  };
+const TodoList = observer<FC<TodoListProps>>(({store}) => {
+  const {todos} = store;
 
   return (
     <>
@@ -29,16 +19,15 @@ export default function TodoList() {
         <Text style={styles.title}>{todos.length} Todos</Text>
       </View>
 
-      <FlatList<TodoProps>
+      <FlatList<ITodo>
         data={todos}
-        renderItem={(props) => (
-          <Todo {...props} toggleDone={toggleDone} deleteTodo={deleteTodo} />
-        )}
+        extraData={todos}
+        renderItem={(props) => <Todo {...props} />}
         keyExtractor={({id}) => `${id}`}
       />
     </>
   );
-}
+});
 
 const styles = StyleSheet.create({
   body: {
@@ -56,3 +45,5 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
 });
+
+export default TodoList;

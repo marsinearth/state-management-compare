@@ -1,28 +1,23 @@
 import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {Dispatch, SetStateAction, useContext, useState} from 'react';
+import React, {FC, useState} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {TodoContext} from '../contexts/todoContext';
+import {ITodoStore} from 'src/models/todo';
+import {observer} from 'mobx-react';
 
-interface ModalRendererProps {
-  showMenu: boolean;
-  toggleMenu: Dispatch<SetStateAction<boolean>>;
+interface NavbarProps {
+  store: ITodoStore;
 }
 
-export default function Navbar() {
-  const [todos, addTodo] = useContext(TodoContext);
-  const [addTodoText, setAddTodo] = useState('');
-
-  const dispatchTodo = () => {
+const Navbar = observer<FC<NavbarProps>>(({store}) => {
+  const [addTodoText, setAddTodo] = useState<string>('');
+  const addTodo = () => {
     if (addTodoText.trim()) {
-      addTodo([
-        ...todos,
-        {
-          id: Date.now(),
-          value: addTodoText,
-          done: false,
-        },
-      ]);
+      store.addTodo({
+        id: Date.now(),
+        value: addTodoText,
+        done: false,
+      });
       setAddTodo('');
     }
   };
@@ -42,12 +37,12 @@ export default function Navbar() {
         <Button
           color={Colors.primary}
           title="Add Todo"
-          onPress={() => dispatchTodo()}
+          onPress={() => addTodo()}
         />
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -75,3 +70,5 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
 });
+
+export default Navbar;

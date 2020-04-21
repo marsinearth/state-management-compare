@@ -9,42 +9,68 @@
  */
 
 import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
+import {IAnyStateTreeNode, destroy, onSnapshot} from 'mobx-state-tree';
 import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {asReduxStore, connectReduxDevtools} from 'mst-middlewares';
+import TodoStore, {ITodoStore} from './models/todo';
 
 import DismissKeyboardHOC from './utils/dismissKeyboardComp';
 import NavBar from './components/navBar';
-import {Provider} from 'react-redux';
 import React from 'react';
 import TodoList from './components/todoList';
-import todosFactory from './models/todo';
+import {connectReduxDevtools} from 'mst-middlewares';
 
 declare const global: {HermesInternal: null | {}};
 
 const initialState = {
-  [Date.now()]: {
-    id: Date.now(),
-    value: 'Buy milk',
-    done: false,
-  },
-  [Date.now() + 1]: {
-    id: Date.now() + 1,
-    value: 'Play with doge',
-    done: false,
-  },
+  todos: [
+    {
+      id: Date.now(),
+      value: 'Buy milk',
+      done: false,
+    },
+    {
+      id: Date.now() + 1,
+      value: 'Play with doge',
+      done: false,
+    },
+  ],
 };
 
-const todos = (window.todos = todosFactory.create(initialState));
-const store = asReduxStore(todos);
-connectReduxDevtools(require('remotedev'), todos);
+let store: ITodoStore;
+let snapshotListener: () => void;
+
+function createTodoStore(snapshot: IAnyStateTreeNode) {
+  // clean up snapshot listener
+  if (snapshotListener) {
+    snapshotListener();
+  }
+  // kill old store to prevent accidental use and run clean up hooks
+  if (store) {
+    destroy(store);
+  }
+
+  // create new one
+  store = TodoStore.create(snapshot);
+
+  // connect devtools
+  connectReduxDevtools(require('remotedev'), store);
+  // connect local storage
+  snapshotListener = onSnapshot(store, (ss) => {
+    console.log(JSON.stringify(ss));
+  });
+
+  return store;
+}
 
 const App = () => {
+  const todoStore = createTodoStore(initialState);
+
   return (
-    <Provider store={store}>
+    <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={{flex: 1}}>
         <DismissKeyboardHOC>
-          <NavBar />
+          <NavBar store={todoStore} />
           <Header />
           {global.HermesInternal == null ? null : (
             <View style={styles.engine}>
@@ -53,10 +79,10 @@ const App = () => {
           )}
         </DismissKeyboardHOC>
         <View style={styles.body}>
-          <TodoList />
+          <TodoList store={todoStore} />
         </View>
       </SafeAreaView>
-    </Provider>
+    </>
   );
 };
 

@@ -1,33 +1,36 @@
-import {types} from 'mobx-state-tree';
+import {Instance, destroy, getRoot, types} from 'mobx-state-tree';
 
-const Todo = types.model({
-  value: types.optional(types.string, ''),
-  done: types.optional(types.boolean, false),
-  id: new Date(),
-});
+export interface ITodo extends Instance<typeof Todo> {}
+
+export interface ITodoStore extends Instance<typeof TodoStore> {}
+
+interface ITodoItem extends Omit<ITodo, 'remove' | 'toggleDone'> {}
+
+const Todo = types
+  .model({
+    value: types.optional(types.string, ''),
+    done: types.optional(types.boolean, false),
+    id: types.number,
+  })
+  .actions((self) => ({
+    remove() {
+      getRoot<ITodoStore>(self).removeTodo(self as ITodoItem);
+    },
+    toggleDone() {
+      self.done = !self.done;
+    },
+  }));
 
 const TodoStore = types
   .model({
-    todos: types.map(Todo),
+    todos: types.array(Todo),
   })
-  .views((self) => ({
-    // utilities
-    findTodoById: function (id: string) {
-      return self.todos.get(id);
-    },
-  }))
   .actions((self) => ({
-    addTodo(value: string) {
-      self.todos.set(`${new Date()}`, Todo.create({value}));
+    addTodo(todo: ITodoItem) {
+      self.todos.push(todo);
     },
-    delTodo(id: string) {
-      self.todos.delete(id);
-    },
-    toggleTodoDone(id: string) {
-      const todo = self.todos.get(id);
-      if (todo) {
-        todo.done = !todo?.done;
-      }
+    removeTodo(todo: ITodoItem) {
+      destroy(todo);
     },
   }));
 

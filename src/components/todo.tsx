@@ -5,55 +5,48 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import React, {FC} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import React from 'react';
+import {ITodo} from 'src/models/todo';
+import {observer} from 'mobx-react';
 
-export interface TodoProps {
-  id: number;
-  done: boolean;
-  value: string;
-}
-
-interface TodoHandleFuncs {
-  toggleDone: (todo: TodoProps) => void;
-  deleteTodo: (todo: TodoProps) => void;
-}
-
-export default function Todo({
-  item,
-  toggleDone,
-  deleteTodo,
-}: ListRenderItemInfo<TodoProps> & TodoHandleFuncs) {
-  const {value, done} = item;
-
-  return (
-    <View style={styles.todoContainer}>
-      <View style={styles.todoSection}>
-        <Text
-          style={[styles.sectionTitle, {color: done ? 'gainsboro' : 'black'}]}>
-          {value}
-        </Text>
+const Todo = observer<FC<ListRenderItemInfo<ITodo>>>(
+  ({item: {value, done, toggleDone, remove}}) => {
+    return (
+      <View style={styles.todoContainer}>
+        <View style={styles.todoSection}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {color: done ? 'gainsboro' : 'black'},
+            ]}>
+            {value}
+          </Text>
+        </View>
+        <View style={styles.btnContainer}>
+          <TouchableHighlight onPress={() => toggleDone()}>
+            <View
+              style={[
+                styles.button,
+                {backgroundColor: done ? 'khaki' : 'teal'},
+              ]}>
+              <Text
+                style={[styles.btnText, {color: done ? 'gray' : 'whitesmoke'}]}>
+                {done ? 'Undo' : 'Done'}
+              </Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={() => remove()}>
+            <View style={[styles.button, {backgroundColor: 'lightcoral'}]}>
+              <Text style={styles.btnText}>Delete</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
       </View>
-      <View style={styles.btnContainer}>
-        <TouchableHighlight onPress={() => toggleDone(item)}>
-          <View
-            style={[styles.button, {backgroundColor: done ? 'khaki' : 'teal'}]}>
-            <Text
-              style={[styles.btnText, {color: done ? 'gray' : 'whitesmoke'}]}>
-              {done ? 'Undo' : 'Done'}
-            </Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={() => deleteTodo(item)}>
-          <View style={[styles.button, {backgroundColor: 'lightcoral'}]}>
-            <Text style={styles.btnText}>Delete</Text>
-          </View>
-        </TouchableHighlight>
-      </View>
-    </View>
-  );
-}
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   todoContainer: {
@@ -90,3 +83,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+export default Todo;
