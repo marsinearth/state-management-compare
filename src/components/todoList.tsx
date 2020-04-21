@@ -14,7 +14,7 @@ const TodoList = observer<FC<TodoListProps>>(({store}) => {
   const {todos} = store;
 
   return (
-    <>
+    <View style={{flex: 1, flexDirection: 'column'}}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{todos.length} Todos</Text>
       </View>
@@ -24,8 +24,9 @@ const TodoList = observer<FC<TodoListProps>>(({store}) => {
         extraData={todos}
         renderItem={(props) => <Todo {...props} />}
         keyExtractor={({id}) => `${id}`}
+        style={styles.listContainer}
       />
-    </>
+    </View>
   );
 });
 
@@ -37,12 +38,16 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
     borderBottomWidth: 0.5,
     borderBottomColor: 'gray',
+    flexGrow: 0,
   },
   title: {
     fontSize: 24,
     fontWeight: '600',
     textAlign: 'center',
     color: Colors.black,
+  },
+  listContainer: {
+    flex: 1,
   },
 });
 

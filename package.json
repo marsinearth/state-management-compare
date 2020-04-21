@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@welldone-software/why-did-you-render": "^4.1.0-alpha.1",
+    "jsc-android": "^241213.0.0",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
     "mobx-state-tree": "^3.16.0",
