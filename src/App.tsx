@@ -10,18 +10,37 @@
 
 import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
 import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {asReduxStore, connectReduxDevtools} from 'mst-middlewares';
 
 import DismissKeyboardHOC from './utils/dismissKeyboardComp';
 import NavBar from './components/navBar';
+import {Provider} from 'react-redux';
 import React from 'react';
 import TodoList from './components/todoList';
-import {TodoProvider} from './contexts/todoContext';
+import todosFactory from './models/todo';
 
 declare const global: {HermesInternal: null | {}};
 
+const initialState = {
+  [Date.now()]: {
+    id: Date.now(),
+    value: 'Buy milk',
+    done: false,
+  },
+  [Date.now() + 1]: {
+    id: Date.now() + 1,
+    value: 'Play with doge',
+    done: false,
+  },
+};
+
+const todos = (window.todos = todosFactory.create(initialState));
+const store = asReduxStore(todos);
+connectReduxDevtools(require('remotedev'), todos);
+
 const App = () => {
   return (
-    <TodoProvider>
+    <Provider store={store}>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={{flex: 1}}>
         <DismissKeyboardHOC>
@@ -37,7 +56,7 @@ const App = () => {
           <TodoList />
         </View>
       </SafeAreaView>
-    </TodoProvider>
+    </Provider>
   );
 };
 
