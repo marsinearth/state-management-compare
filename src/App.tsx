@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   body: {
+    flex: 1,
     flexDirection: 'column',
     backgroundColor: Colors.white,
   },
