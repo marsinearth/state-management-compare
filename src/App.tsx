@@ -37,13 +37,8 @@ const initialState = {
 };
 
 let store: ITodoStore;
-let snapshotListener: () => void;
 
 function createTodoStore(snapshot: IAnyStateTreeNode) {
-  // clean up snapshot listener
-  if (snapshotListener) {
-    snapshotListener();
-  }
   // kill old store to prevent accidental use and run clean up hooks
   if (store) {
     destroy(store);
@@ -54,11 +49,6 @@ function createTodoStore(snapshot: IAnyStateTreeNode) {
 
   // connect devtools
   connectReduxDevtools(require('remotedev'), store);
-  // connect local storage
-  snapshotListener = onSnapshot(store, (ss) => {
-    console.log(JSON.stringify(ss));
-  });
-
   return store;
 }
 
