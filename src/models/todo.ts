@@ -1,4 +1,6 @@
-import {Instance, destroy, getRoot, types} from 'mobx-state-tree';
+import {Instance, getRoot, types} from 'mobx-state-tree';
+
+import {values} from 'mobx';
 
 export interface ITodo extends Instance<typeof Todo> {}
 
@@ -13,24 +15,32 @@ const Todo = types
     id: types.number,
   })
   .actions((self) => ({
-    remove() {
-      getRoot<ITodoStore>(self).removeTodo(self as ITodoItem);
-    },
     toggleDone() {
-      self.done = !self.done;
+      getRoot<ITodoStore>(self).updateTodo(self as ITodo);
+    },
+    delTodo() {
+      getRoot<ITodoStore>(self).removeTodo(self.id);
     },
   }));
 
 const TodoStore = types
   .model({
-    todos: types.array(Todo),
+    todos: types.map(Todo),
   })
+  .views((self) => ({
+    get showList() {
+      return values(self.todos);
+    },
+  }))
   .actions((self) => ({
     addTodo(todo: ITodoItem) {
-      self.todos.push(todo);
+      self.todos.set(`${todo.id}`, todo);
     },
-    removeTodo(todo: ITodoItem) {
-      destroy(todo);
+    updateTodo(todo: ITodoItem) {
+      self.todos.set(`${todo.id}`, {...todo, done: !todo.done});
+    },
+    removeTodo(id: number) {
+      self.todos.delete(`${id}`);
     },
   }));
 

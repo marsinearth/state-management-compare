@@ -22,18 +22,18 @@ import {connectReduxDevtools} from 'mst-middlewares';
 declare const global: {HermesInternal: null | {}};
 
 const initialState = {
-  todos: [
-    {
+  todos: {
+    [Date.now()]: {
       id: Date.now(),
       value: 'Buy milk',
       done: false,
     },
-    {
+    [Date.now() + 1]: {
       id: Date.now() + 1,
       value: 'Play with doge',
       done: false,
     },
-  ],
+  },
 };
 
 let store: ITodoStore;

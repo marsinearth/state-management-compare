@@ -12,7 +12,7 @@ import {ITodo} from 'src/models/todo';
 import {observer} from 'mobx-react';
 
 const Todo = observer<FC<ListRenderItemInfo<ITodo>>>(
-  ({item: {value, done, toggleDone, remove}}) => {
+  ({item: {value, done, toggleDone, delTodo}}) => {
     return (
       <View style={styles.todoContainer}>
         <View style={styles.todoSection}>
@@ -37,7 +37,7 @@ const Todo = observer<FC<ListRenderItemInfo<ITodo>>>(
               </Text>
             </View>
           </TouchableHighlight>
-          <TouchableHighlight onPress={() => remove()}>
+          <TouchableHighlight onPress={() => delTodo()}>
             <View style={[styles.button, {backgroundColor: 'lightcoral'}]}>
               <Text style={styles.btnText}>Delete</Text>
             </View>

@@ -11,17 +11,16 @@ interface TodoListProps {
 }
 
 const TodoList = observer<FC<TodoListProps>>(({store}) => {
-  const {todos} = store;
+  const {showList} = store;
 
   return (
     <View style={{flex: 1, flexDirection: 'column'}}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{todos.length} Todos</Text>
+        <Text style={styles.title}>{showList.length} Todos</Text>
       </View>
 
       <FlatList<ITodo>
-        data={todos}
-        extraData={todos}
+        data={showList}
         renderItem={(props) => <Todo {...props} />}
         keyExtractor={({id}) => `${id}`}
         style={styles.listContainer}
