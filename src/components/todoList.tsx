@@ -12,9 +12,8 @@ export default function TodoList() {
 
   const toggleDone = useCallback(
     (id: number) => {
-      setTodos((prevTodos: TodoMap) => {
-        prevTodos[id].done = !prevTodos[id].done;
-        return {...prevTodos};
+      setTodos((draft: TodoMap) => {
+        draft[id].done = !draft[id].done;
       });
     },
     [setTodos],
@@ -22,11 +21,8 @@ export default function TodoList() {
 
   const deleteTodo = useCallback(
     (id: number) => {
-      setTodos((prevTodos: TodoMap) => {
-        delete prevTodos[id];
-        return {
-          ...prevTodos,
-        };
+      setTodos((draft: TodoMap) => {
+        delete draft[id];
       });
     },
     [setTodos],

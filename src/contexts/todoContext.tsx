@@ -1,21 +1,16 @@
-import React, {
-  Dispatch,
-  FC,
-  SetStateAction,
-  createContext,
-  useState,
-} from 'react';
+import {ImmerHook, useImmer} from 'use-immer';
+import React, {FC, createContext} from 'react';
 
 import {TodoProps} from '../components/todo';
 
 export type TodoMap = {[id: number]: TodoProps};
 
-type TodoContextState = [TodoMap, Dispatch<SetStateAction<TodoMap>>];
+type TodoContextState = ImmerHook<TodoMap>;
 
 export const TodoContext = createContext<TodoContextState>([{}, () => {}]);
 
 export const TodoProvider: FC<unknown> = ({children}) => {
-  const [todos, setTodos] = useState({
+  const [todos, setTodos] = useImmer({
     [Date.now()]: {
       id: Date.now(),
       value: 'Buy milk',

@@ -10,14 +10,13 @@ export default function Navbar() {
 
   const addTodo = useCallback(() => {
     if (addTodoText.trim()) {
-      setTodo((prevTodos: TodoMap) => ({
-        ...prevTodos,
-        [Date.now()]: {
+      setTodo((draft: TodoMap) => {
+        draft[Date.now()] = {
           id: Date.now(),
           value: addTodoText,
           done: false,
-        },
-      }));
+        };
+      });
       setAddTodo('');
     }
   }, [setTodo, addTodoText]);

@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@welldone-software/why-did-you-render": "^4.1.0-alpha.1",
+    "immer": "^6.0.3",
     "react": "16.11.0",
-    "react-native": "0.62.2"
+    "react-native": "0.62.2",
+    "use-immer": "^0.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
