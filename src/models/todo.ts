@@ -1,4 +1,4 @@
-import {Instance, getRoot, types} from 'mobx-state-tree';
+import {Instance, SnapshotOut, getRoot, types} from 'mobx-state-tree';
 
 import {values} from 'mobx';
 
@@ -6,7 +6,7 @@ export interface ITodo extends Instance<typeof Todo> {}
 
 export interface ITodoStore extends Instance<typeof TodoStore> {}
 
-interface ITodoItem extends Omit<ITodo, 'remove' | 'toggleDone'> {}
+export interface ITodoItem extends SnapshotOut<typeof Todo> {}
 
 const Todo = types
   .model({
@@ -28,7 +28,7 @@ const TodoStore = types
     todos: types.map(Todo),
   })
   .views((self) => ({
-    get showList() {
+    get todosArray() {
       return values(self.todos);
     },
   }))
