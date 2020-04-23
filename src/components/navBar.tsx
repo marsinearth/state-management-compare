@@ -2,11 +2,13 @@ import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {useState} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import FilterModal from './filterModal';
 import {addTodo} from '../redux/todoSlice';
 import {useDispatch} from 'react-redux';
 
 export default function Navbar() {
   const dispatch = useDispatch();
+  const [showModal, toggleModal] = useState<boolean>(false);
   const [addTodoText, setAddTodo] = useState('');
 
   const dispatchTodo = () => {
@@ -26,8 +28,12 @@ export default function Navbar() {
     <View style={styles.navContainer}>
       <View style={styles.rowContainer}>
         <Text style={styles.sectionTitle}>Simple Todo</Text>
+        <Button
+          color={Colors.primary}
+          title="filter"
+          onPress={() => toggleModal(true)}
+        />
       </View>
-
       <View style={styles.rowContainer}>
         <TextInput
           style={styles.inputContainer}
@@ -40,6 +46,7 @@ export default function Navbar() {
           onPress={() => dispatchTodo()}
         />
       </View>
+      <FilterModal show={showModal} onClose={() => toggleModal(false)} />
     </View>
   );
 }
@@ -61,7 +68,7 @@ const styles = StyleSheet.create({
   rowContainer: {
     height: 60,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   sectionTitle: {

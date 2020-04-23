@@ -1,9 +1,14 @@
-import {configureStore} from '@reduxjs/toolkit';
+import {combineReducers, configureStore} from '@reduxjs/toolkit';
+
+import filter from './filterSlice';
 import todos from './todoSlice';
 
-const rootReducer = {
+export type RootReducer = ReturnType<typeof rootReducer>;
+
+const rootReducer = combineReducers({
   todos,
-};
+  filter,
+});
 
 const preloadedState = {
   todos: {

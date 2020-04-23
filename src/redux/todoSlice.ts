@@ -4,7 +4,15 @@ import {
   createSlice,
 } from '@reduxjs/toolkit';
 
+import {FilterEnum} from './filterSlice';
+import {RootReducer} from './store';
 import {TodoProps} from 'src/components/todo';
+
+export const TODO_FILTERS = {
+  [FilterEnum.SHOW_ALL]: () => true,
+  [FilterEnum.SHOW_ACTIVE]: (todo: TodoProps) => !todo.done,
+  [FilterEnum.SHOW_COMPLETED]: (todo: TodoProps) => todo.done,
+};
 
 const todosAdapter = createEntityAdapter<TodoProps>();
 
@@ -21,7 +29,9 @@ const todoSlice = createSlice({
   },
 });
 
-export const todosSelector = todosAdapter.getSelectors(({todos}) => todos);
+export const todosSelector = todosAdapter.getSelectors<RootReducer>(
+  ({todos}) => todos,
+);
 
 export const {addTodo, deleteTodo, setTodoDone} = todoSlice.actions;
 

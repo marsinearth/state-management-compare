@@ -1,22 +1,37 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {TODO_FILTERS, todosSelector} from '../redux/todoSlice';
 import Todo, {TodoProps} from './todo';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {FilterState} from '../redux/filterSlice';
 import React from 'react';
-import {todosSelector} from '../redux/todoSlice';
+import {RootReducer} from 'src/redux/store';
+import {createSelector} from '@reduxjs/toolkit';
 import {useSelector} from 'react-redux';
 
+const filteredTodoSelector = createSelector<
+  RootReducer,
+  TodoProps[],
+  FilterState,
+  {filteredTodo: TodoProps[]; title: string}
+>([todosSelector.selectAll, ({filter}) => filter], (todos, {name, title}) => ({
+  filteredTodo: todos.filter(TODO_FILTERS[name]),
+  title,
+}));
+
 export default function TodoList() {
-  const todos = useSelector(todosSelector.selectAll);
+  const {filteredTodo, title} = useSelector(filteredTodoSelector);
 
   return (
     <View style={{flex: 1, flexDirection: 'column'}}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{todos.length} Todos</Text>
+        <Text style={styles.title}>
+          {filteredTodo.length} {title} Todos
+        </Text>
       </View>
 
       <FlatList<TodoProps>
-        data={todos}
+        data={filteredTodo}
         renderItem={(props) => <Todo {...props} />}
         keyExtractor={({id}) => `${id}`}
         style={styles.listContainer}
