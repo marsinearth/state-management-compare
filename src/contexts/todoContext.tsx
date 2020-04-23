@@ -1,7 +1,14 @@
 import {ImmerHook, useImmer} from 'use-immer';
 import React, {FC, createContext} from 'react';
 
+import {FilterEnum} from './filterContext';
 import {TodoProps} from '../components/todo';
+
+const TODO_FILTERS = {
+  [FilterEnum.SHOW_ALL]: () => true,
+  [FilterEnum.SHOW_ACTIVE]: (todo: TodoProps) => !todo.done,
+  [FilterEnum.SHOW_COMPLETED]: (todo: TodoProps) => todo.done,
+};
 
 export type TodoMap = {[id: number]: TodoProps};
 
@@ -29,3 +36,6 @@ export const TodoProvider: FC<unknown> = ({children}) => {
     </TodoContext.Provider>
   );
 };
+
+export const todoFilter = (todos: TodoProps[], filter: FilterEnum) =>
+  todos.filter(TODO_FILTERS[filter]);

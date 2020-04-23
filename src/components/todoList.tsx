@@ -1,14 +1,19 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import React, {useCallback, useContext, useMemo} from 'react';
 import Todo, {TodoProps} from './todo';
-import {TodoContext, TodoMap} from '../contexts/todoContext';
+import {TodoContext, TodoMap, todoFilter} from '../contexts/todoContext';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {FilterContext} from '../contexts/filterContext';
 
 export default function TodoList() {
   const [todos, setTodos] = useContext(TodoContext);
+  const [{filter, title}] = useContext(FilterContext);
 
-  const listData = useMemo(() => Object.values(todos), [todos]);
+  const listData = useMemo(() => todoFilter(Object.values(todos), filter), [
+    todos,
+    filter,
+  ]);
 
   const toggleDone = useCallback(
     (id: number) => {
@@ -31,7 +36,9 @@ export default function TodoList() {
   return (
     <View style={{flex: 1, flexDirection: 'column'}}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{listData.length} Todos</Text>
+        <Text style={styles.title}>
+          {listData.length} {title} Todos
+        </Text>
       </View>
 
       <FlatList<TodoProps>
