@@ -8,10 +8,10 @@ import {
 import React, {FC} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {ITodo} from 'src/models/todo';
-import {observer} from 'mobx-react';
+import {ITodoInstance} from '../models/todo';
+import {observer} from 'mobx-react-lite';
 
-const Todo = observer<FC<ListRenderItemInfo<ITodo>>>(
+const Todo: FC<ListRenderItemInfo<ITodoInstance>> = observer(
   ({item: {value, done, toggleDone, delTodo}}) => {
     return (
       <View style={styles.todoContainer}>

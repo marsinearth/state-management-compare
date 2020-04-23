@@ -1,12 +1,32 @@
-import {Instance, SnapshotOut, getRoot, types} from 'mobx-state-tree';
+import {Instance, SnapshotIn, getParent, types} from 'mobx-state-tree';
+import {SHOW_ACTIVE, SHOW_ALL, SHOW_COMPLETED} from '../constants/todoFilters';
 
 import {values} from 'mobx';
 
-export interface ITodo extends Instance<typeof Todo> {}
+export type TTodo = typeof Todo;
+
+export type TTodoStore = typeof TodoStore;
+
+export interface ITodoInstance extends Instance<TTodo> {}
 
 export interface ITodoStore extends Instance<typeof TodoStore> {}
 
-export interface ITodoItem extends SnapshotOut<typeof Todo> {}
+export interface ITodoItem extends SnapshotIn<TTodo> {}
+
+const filterType = types.union(
+  ...[SHOW_ALL, SHOW_COMPLETED, SHOW_ACTIVE].map(types.literal),
+);
+const TODO_FILTERS = {
+  [SHOW_ALL]: () => true,
+  [SHOW_ACTIVE]: (todo: ITodoItem) => !todo.done,
+  [SHOW_COMPLETED]: (todo: ITodoItem) => todo.done,
+};
+
+export const FILTER_TITLES = {
+  [SHOW_ALL]: 'All',
+  [SHOW_ACTIVE]: 'Active',
+  [SHOW_COMPLETED]: 'Completed',
+};
 
 const Todo = types
   .model({
@@ -16,31 +36,42 @@ const Todo = types
   })
   .actions((self) => ({
     toggleDone() {
-      getRoot<ITodoStore>(self).updateTodo(self as ITodo);
+      getParent<TTodoStore>(self, 2).updateTodo(self);
     },
     delTodo() {
-      getRoot<ITodoStore>(self).removeTodo(self.id);
+      getParent<TTodoStore>(self, 2).removeTodo(self.id);
     },
   }));
 
 const TodoStore = types
   .model({
     todos: types.map(Todo),
+    filter: types.optional(filterType, SHOW_ALL),
   })
-  .views((self) => ({
-    get todosArray() {
-      return values(self.todos);
-    },
-  }))
+
   .actions((self) => ({
-    addTodo(todo: ITodoItem) {
+    addTodo(todo: ITodoItem | ITodoInstance) {
       self.todos.set(`${todo.id}`, todo);
     },
-    updateTodo(todo: ITodoItem) {
+    updateTodo(todo: ITodoItem | ITodoInstance) {
       self.todos.set(`${todo.id}`, {...todo, done: !todo.done});
     },
     removeTodo(id: number) {
       self.todos.delete(`${id}`);
+    },
+    setFilter(filter: string) {
+      self.filter = filter;
+    },
+  }))
+  .views((self) => ({
+    get todosArray() {
+      return values(self.todos);
+    },
+    get filteredTodos() {
+      return self.todosArray.filter(TODO_FILTERS[self.filter]);
+    },
+    get filterTitle() {
+      return FILTER_TITLES[self.filter];
     },
   }));
 

@@ -9,58 +9,23 @@
  */
 
 import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
-import {IAnyStateTreeNode, destroy, onSnapshot} from 'mobx-state-tree';
+import {Provider, rootStore} from './models/root';
 import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import TodoStore, {ITodoStore} from './models/todo';
 
 import DismissKeyboardHOC from './utils/dismissKeyboardComp';
 import NavBar from './components/navBar';
 import React from 'react';
 import TodoList from './components/todoList';
-import {connectReduxDevtools} from 'mst-middlewares';
 
 declare const global: {HermesInternal: null | {}};
 
-const initialState = {
-  todos: {
-    [Date.now()]: {
-      id: Date.now(),
-      value: 'Buy milk',
-      done: false,
-    },
-    [Date.now() + 1]: {
-      id: Date.now() + 1,
-      value: 'Play with doge',
-      done: false,
-    },
-  },
-};
-
-let store: ITodoStore;
-
-function createTodoStore(snapshot: IAnyStateTreeNode) {
-  // kill old store to prevent accidental use and run clean up hooks
-  if (store) {
-    destroy(store);
-  }
-
-  // create new one
-  store = TodoStore.create(snapshot);
-
-  // connect devtools
-  connectReduxDevtools(require('remotedev'), store);
-  return store;
-}
-
 const App = () => {
-  const todoStore = createTodoStore(initialState);
-
   return (
-    <>
+    <Provider value={rootStore}>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={{flex: 1}}>
         <DismissKeyboardHOC>
-          <NavBar store={todoStore} />
+          <NavBar />
           <Header />
           {global.HermesInternal == null ? null : (
             <View style={styles.engine}>
@@ -69,10 +34,10 @@ const App = () => {
           )}
         </DismissKeyboardHOC>
         <View style={styles.body}>
-          <TodoList store={todoStore} />
+          <TodoList />
         </View>
       </SafeAreaView>
-    </>
+    </Provider>
   );
 };
 

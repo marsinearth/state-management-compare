@@ -2,18 +2,18 @@ import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {FC, useState} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {ITodoStore} from 'src/models/todo';
-import {observer} from 'mobx-react';
+import FilterModal from './filterModal';
+import {observer} from 'mobx-react-lite';
+import {useMst} from '../models/root';
 
-interface NavbarProps {
-  store: ITodoStore;
-}
-
-const Navbar = observer<FC<NavbarProps>>(({store}) => {
+const Navbar: FC = observer(() => {
+  const {addTodo} = useMst();
+  const [showModal, toggleModal] = useState<boolean>(false);
   const [addTodoText, setAddTodo] = useState<string>('');
-  const addTodo = () => {
+
+  const onAddTodo = () => {
     if (addTodoText.trim()) {
-      store.addTodo({
+      addTodo({
         id: Date.now(),
         value: addTodoText,
         done: false,
@@ -26,8 +26,12 @@ const Navbar = observer<FC<NavbarProps>>(({store}) => {
     <View style={styles.navContainer}>
       <View style={styles.rowContainer}>
         <Text style={styles.sectionTitle}>Simple Todo</Text>
+        <Button
+          color={Colors.primary}
+          title="filter"
+          onPress={() => toggleModal(true)}
+        />
       </View>
-
       <View style={styles.rowContainer}>
         <TextInput
           style={styles.inputContainer}
@@ -37,9 +41,10 @@ const Navbar = observer<FC<NavbarProps>>(({store}) => {
         <Button
           color={Colors.primary}
           title="Add Todo"
-          onPress={() => addTodo()}
+          onPress={() => onAddTodo()}
         />
       </View>
+      <FilterModal show={showModal} onClose={() => toggleModal(false)} />
     </View>
   );
 });
@@ -61,7 +66,7 @@ const styles = StyleSheet.create({
   rowContainer: {
     height: 60,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   sectionTitle: {

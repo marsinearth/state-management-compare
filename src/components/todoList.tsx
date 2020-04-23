@@ -1,26 +1,25 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import {ITodo, ITodoStore} from 'src/models/todo';
 import React, {FC} from 'react';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {ITodoInstance} from '../models/todo';
 import Todo from './todo';
-import {observer} from 'mobx-react';
+import {observer} from 'mobx-react-lite';
+import {useMst} from '../models/root';
 
-interface TodoListProps {
-  store: ITodoStore;
-}
-
-const TodoList = observer<FC<TodoListProps>>(({store}) => {
-  const {todosArray} = store;
+const TodoList: FC = observer(() => {
+  const {filteredTodos, filterTitle} = useMst();
 
   return (
     <View style={{flex: 1, flexDirection: 'column'}}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{todosArray.length} Todos</Text>
+        <Text style={styles.title}>
+          {filteredTodos.length} {filterTitle} Todos
+        </Text>
       </View>
 
-      <FlatList<ITodo>
-        data={todosArray}
+      <FlatList<ITodoInstance>
+        data={filteredTodos}
         renderItem={(props) => <Todo {...props} />}
         keyExtractor={({id}) => `${id}`}
         style={styles.listContainer}
